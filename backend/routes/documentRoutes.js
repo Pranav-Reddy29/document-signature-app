@@ -13,6 +13,8 @@ const upload = require(
 
 const {
   uploadDocument,
+  getDocuments,
+  getDocumentById,
 } = require(
   "../controllers/documentController"
 );
@@ -22,6 +24,18 @@ router.post(
   protect,
   upload.single("pdf"),
   uploadDocument
+);
+
+router.get(
+  "/",
+  protect,
+  getDocuments
+);
+
+router.get(
+  "/:id",
+  protect,
+  getDocumentById
 );
 
 module.exports = router;

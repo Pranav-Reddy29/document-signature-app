@@ -21,6 +21,9 @@ model Document {
   id          String   @id @default(uuid())
   title       String
   fileUrl     String
+
+  status      String   @default("PENDING")
+
   ownerId     String
   createdAt   DateTime @default(now())
 
