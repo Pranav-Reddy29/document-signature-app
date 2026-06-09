@@ -13,6 +13,11 @@ const documentRoutes =
     "./routes/documentRoutes"
   );
 
+const signatureRoutes =
+  require(
+    "./routes/signatureRoutes"
+  );
+
 const app = express();
 
 app.use(cors());
@@ -36,6 +41,11 @@ app.use(
 app.use(
   "/api/documents",
   documentRoutes
+);
+
+app.use(
+  "/api/signatures",
+  signatureRoutes
 );
 
 app.get("/", (req, res) => {

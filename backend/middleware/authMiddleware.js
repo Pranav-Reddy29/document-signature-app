@@ -25,10 +25,10 @@ const protect = async (
           process.env.JWT_SECRET
         );
 
-      req.user = decoded.id;
+      req.user = decoded;
 
       next();
-    } catch {
+    } catch (error) {
       return res.status(401).json({
         message:
           "Not Authorized",
