@@ -1,11 +1,7 @@
-import Documents from "./pages/Documents";
+import PDFViewer from "./pages/PDFViewer";
 
 function App() {
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <Documents />
-    </div>
-  );
+  return <PDFViewer />;
 }
 
 export default App;

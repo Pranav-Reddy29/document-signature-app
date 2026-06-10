@@ -1,13 +1,7 @@
-const express = require(
-  "express"
-);
+const express = require("express");
 
 const router =
   express.Router();
-
-const protect = require(
-  "../middleware/authMiddleware"
-);
 
 const {
   createSignature,
@@ -18,13 +12,11 @@ const {
 
 router.post(
   "/",
-  protect,
   createSignature
 );
 
 router.get(
   "/:documentId",
-  protect,
   getSignatures
 );
 

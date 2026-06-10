@@ -1,72 +1,65 @@
-const prisma = require(
-  "../config/prisma"
-);
+const prisma = require("../config/prisma");
 
-const createSignature =
-  async (req, res) => {
-    try {
-      const {
-        documentId,
-        x,
-        y,
-        page,
-      } = req.body;
+const createSignature = async (req, res) => {
+  try {
+    const {
+      documentId,
+      x,
+      y,
+      page,
+    } = req.body;
 
-      const signature =
-        await prisma.signature.create({
-          data: {
-            x,
-            y,
-            page,
+    const signature =
+      await prisma.signature.create({
+        data: {
+          x,
+          y,
+          page,
 
-            document: {
-              connect: {
-                id: documentId,
-              },
-            },
-
-            signer: {
-              connect: {
-                id: req.user.id,
-              },
+          document: {
+            connect: {
+              id: documentId,
             },
           },
-        });
 
-      res.status(201).json(
-        signature
-      );
-    } catch (error) {
-      console.log(error);
-
-      res.status(500).json({
-        message:
-          "Failed to create signature",
-      });
-    }
-  };
-
-const getSignatures =
-  async (req, res) => {
-    try {
-      const signatures =
-        await prisma.signature.findMany({
-          where: {
-            documentId:
-              req.params.documentId,
+          signer: {
+            connect: {
+              id: "dc8c5fd7-25f1-49cd-82b7-4b28e5b1b53b",
+            },
           },
-        });
-
-      res.json(signatures);
-    } catch (error) {
-      console.log(error);
-
-      res.status(500).json({
-        message:
-          "Failed to fetch signatures",
+        },
       });
-    }
-  };
+
+    res.status(201).json(signature);
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Failed to create signature",
+    });
+  }
+};
+
+const getSignatures = async (req, res) => {
+  try {
+    const signatures =
+      await prisma.signature.findMany({
+        where: {
+          documentId:
+            req.params.documentId,
+        },
+      });
+
+    res.json(signatures);
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message:
+        "Failed to fetch signatures",
+    });
+  }
+};
 
 module.exports = {
   createSignature,
