@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 import {
@@ -20,8 +20,28 @@ export default function PDFViewer() {
   const [numPages, setNumPages] =
     useState(null);
 
-  const [signaturePos, setSignaturePos] =
-    useState(null);
+  const [signatures, setSignatures] =
+    useState([]);
+
+  const documentId =
+    "6320872f-2ee8-41f2-b955-0659e96a53a5";
+
+  useEffect(() => {
+    fetchSignatures();
+  }, []);
+
+  async function fetchSignatures() {
+    try {
+      const res =
+        await axios.get(
+          `http://localhost:5000/api/signatures/${documentId}`
+        );
+
+      setSignatures(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   function onLoadSuccess({
     numPages,
@@ -29,44 +49,36 @@ export default function PDFViewer() {
     setNumPages(numPages);
   }
 
-  const handleClick =
-    async (e) => {
-      const rect =
-        e.currentTarget.getBoundingClientRect();
+  async function handleClick(e) {
+    const rect =
+      e.currentTarget.getBoundingClientRect();
 
-      const x =
-        e.clientX - rect.left;
+    const x =
+      e.clientX - rect.left;
 
-      const y =
-        e.clientY - rect.top;
+    const y =
+      e.clientY - rect.top;
 
-      setSignaturePos({
-        x,
-        y,
-      });
+    try {
+      await axios.post(
+        "http://localhost:5000/api/signatures",
+        {
+          documentId,
+          x,
+          y,
+          page: 1,
+        }
+      );
 
-      try {
-        await axios.post(
-          "http://localhost:5000/api/signatures",
-          {
-            documentId:
-              "6320872f-2ee8-41f2-b955-0659e96a53a5",
-            x,
-            y,
-            page: 1,
-          }
-        );
+      fetchSignatures();
 
-        console.log(
-          "Signature Saved"
-        );
-      } catch (error) {
-        console.log(
-          "Signature Save Error:",
-          error
-        );
-      }
-    };
+      console.log(
+        "Signature Saved"
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div className="p-8">
@@ -98,18 +110,21 @@ export default function PDFViewer() {
           )}
         </Document>
 
-        {signaturePos && (
-          <div
-            className="absolute text-3xl"
-            style={{
-              left:
-                signaturePos.x,
-              top:
-                signaturePos.y,
-            }}
-          >
-            ✍️
-          </div>
+        {signatures.map(
+          (signature) => (
+            <div
+              key={signature.id}
+              className="absolute text-3xl"
+              style={{
+                left:
+                  signature.x,
+                top:
+                  signature.y,
+              }}
+            >
+              ✍️
+            </div>
+          )
         )}
       </div>
     </div>
