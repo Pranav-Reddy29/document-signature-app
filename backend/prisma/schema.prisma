@@ -44,11 +44,12 @@ model Signature {
   y           Float
   page        Int
 
+  imageData   String?   // NEW FIELD
+
   status      String   @default("PENDING")
 
   createdAt   DateTime @default(now())
 
   document Document @relation(fields: [documentId], references: [id])
-
-  signer User @relation(fields: [signerId], references: [id])
+  signer   User @relation(fields: [signerId], references: [id])
 }

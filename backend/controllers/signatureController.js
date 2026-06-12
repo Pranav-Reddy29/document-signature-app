@@ -7,6 +7,7 @@ const createSignature = async (req, res) => {
       x,
       y,
       page,
+      imageData,
     } = req.body;
 
     const signature =
@@ -15,6 +16,7 @@ const createSignature = async (req, res) => {
           x,
           y,
           page,
+          imageData,
 
           document: {
             connect: {
@@ -36,6 +38,7 @@ const createSignature = async (req, res) => {
 
     res.status(500).json({
       message: "Failed to create signature",
+      error: error.message,
     });
   }
 };

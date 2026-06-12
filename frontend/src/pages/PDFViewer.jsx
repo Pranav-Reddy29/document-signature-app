@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+import SignaturePad from "../components/SignaturePad";
+
 import {
   pdfjs,
   Document,
@@ -22,6 +24,10 @@ export default function PDFViewer() {
 
   const [signatures, setSignatures] =
     useState([]);
+
+  const [signatureImage,
+    setSignatureImage] =
+    useState(null);
 
   const documentId =
     "6320872f-2ee8-41f2-b955-0659e96a53a5";
@@ -49,7 +55,23 @@ export default function PDFViewer() {
     setNumPages(numPages);
   }
 
+  const saveSignatureImage =
+    (image) => {
+      setSignatureImage(image);
+
+      console.log(
+        "Signature Image Saved"
+      );
+    };
+
   async function handleClick(e) {
+    if (!signatureImage) {
+      alert(
+        "Please draw and save a signature first"
+      );
+      return;
+    }
+
     const rect =
       e.currentTarget.getBoundingClientRect();
 
@@ -67,16 +89,21 @@ export default function PDFViewer() {
           x,
           y,
           page: 1,
+          imageData:
+            signatureImage,
         }
       );
 
-      fetchSignatures();
+      await fetchSignatures();
 
       console.log(
         "Signature Saved"
       );
     } catch (error) {
-      console.log(error);
+      console.log(
+        "Signature Save Error:",
+        error
+      );
     }
   }
 
@@ -85,6 +112,12 @@ export default function PDFViewer() {
       <h1 className="text-3xl font-bold mb-6">
         PDF Viewer
       </h1>
+
+      <SignaturePad
+        onSave={
+          saveSignatureImage
+        }
+      />
 
       <div
         className="relative inline-block border"
@@ -97,7 +130,9 @@ export default function PDFViewer() {
           }
         >
           {Array.from(
-            new Array(numPages),
+            new Array(
+              numPages
+            ),
             (_, index) => (
               <Page
                 key={index}
@@ -113,8 +148,10 @@ export default function PDFViewer() {
         {signatures.map(
           (signature) => (
             <div
-              key={signature.id}
-              className="absolute text-3xl"
+              key={
+                signature.id
+              }
+              className="absolute"
               style={{
                 left:
                   signature.x,
@@ -122,7 +159,19 @@ export default function PDFViewer() {
                   signature.y,
               }}
             >
-              ✍️
+              {signature.imageData ? (
+                <img
+                  src={
+                    signature.imageData
+                  }
+                  alt="signature"
+                  width={120}
+                />
+              ) : (
+                <div className="text-3xl">
+                  ✍️
+                </div>
+              )}
             </div>
           )
         )}
