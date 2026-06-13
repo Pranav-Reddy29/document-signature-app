@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-import SignaturePad from "../components/SignaturePad";
-
 import {
   pdfjs,
   Document,
   Page,
 } from "react-pdf";
+
+import SignaturePad from "../components/SignaturePad";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -25,8 +25,7 @@ export default function PDFViewer() {
   const [signatures, setSignatures] =
     useState([]);
 
-  const [signatureImage,
-    setSignatureImage] =
+  const [signatureImage, setSignatureImage] =
     useState(null);
 
   const documentId =
@@ -34,14 +33,22 @@ export default function PDFViewer() {
 
   useEffect(() => {
     fetchSignatures();
+
+    const savedImage =
+      localStorage.getItem(
+        "signatureImage"
+      );
+
+    if (savedImage) {
+      setSignatureImage(savedImage);
+    }
   }, []);
 
   async function fetchSignatures() {
     try {
-      const res =
-        await axios.get(
-          `http://localhost:5000/api/signatures/${documentId}`
-        );
+      const res = await axios.get(
+        `http://localhost:5000/api/signatures/${documentId}`
+      );
 
       setSignatures(res.data);
     } catch (error) {
@@ -55,19 +62,25 @@ export default function PDFViewer() {
     setNumPages(numPages);
   }
 
-  const saveSignatureImage =
-    (image) => {
-      setSignatureImage(image);
+  const handleSignatureSave = (
+    image
+  ) => {
+    localStorage.setItem(
+      "signatureImage",
+      image
+    );
 
-      console.log(
-        "Signature Image Saved"
-      );
-    };
+    setSignatureImage(image);
+
+    console.log(
+      "Signature Image Saved"
+    );
+  };
 
   async function handleClick(e) {
     if (!signatureImage) {
       alert(
-        "Please draw and save a signature first"
+        "Please draw and save a signature first."
       );
       return;
     }
@@ -75,35 +88,35 @@ export default function PDFViewer() {
     const rect =
       e.currentTarget.getBoundingClientRect();
 
-    const x =
-      e.clientX - rect.left;
+    const xPercent =
+      ((e.clientX - rect.left) /
+        rect.width) *
+      100;
 
-    const y =
-      e.clientY - rect.top;
+    const yPercent =
+      ((e.clientY - rect.top) /
+        rect.height) *
+      100;
 
     try {
       await axios.post(
         "http://localhost:5000/api/signatures",
         {
           documentId,
-          x,
-          y,
+          xPercent,
+          yPercent,
           page: 1,
-          imageData:
-            signatureImage,
+          imageData: signatureImage,
         }
       );
 
-      await fetchSignatures();
+      fetchSignatures();
 
       console.log(
         "Signature Saved"
       );
     } catch (error) {
-      console.log(
-        "Signature Save Error:",
-        error
-      );
+      console.log(error);
     }
   }
 
@@ -115,7 +128,7 @@ export default function PDFViewer() {
 
       <SignaturePad
         onSave={
-          saveSignatureImage
+          handleSignatureSave
         }
       />
 
@@ -130,9 +143,7 @@ export default function PDFViewer() {
           }
         >
           {Array.from(
-            new Array(
-              numPages
-            ),
+            new Array(numPages),
             (_, index) => (
               <Page
                 key={index}
@@ -147,32 +158,20 @@ export default function PDFViewer() {
 
         {signatures.map(
           (signature) => (
-            <div
-              key={
-                signature.id
+            <img
+              key={signature.id}
+              src={
+                signature.imageData
               }
-              className="absolute"
+              alt="signature"
+              className="absolute w-32"
               style={{
-                left:
-                  signature.x,
-                top:
-                  signature.y,
+                left: `${signature.xPercent}%`,
+                top: `${signature.yPercent}%`,
+                transform:
+                  "translate(-50%, -50%)",
               }}
-            >
-              {signature.imageData ? (
-                <img
-                  src={
-                    signature.imageData
-                  }
-                  alt="signature"
-                  width={120}
-                />
-              ) : (
-                <div className="text-3xl">
-                  ✍️
-                </div>
-              )}
-            </div>
+            />
           )
         )}
       </div>

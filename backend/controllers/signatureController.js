@@ -1,11 +1,14 @@
 const prisma = require("../config/prisma");
 
-const createSignature = async (req, res) => {
+const createSignature = async (
+  req,
+  res
+) => {
   try {
     const {
       documentId,
-      x,
-      y,
+      xPercent,
+      yPercent,
       page,
       imageData,
     } = req.body;
@@ -13,8 +16,8 @@ const createSignature = async (req, res) => {
     const signature =
       await prisma.signature.create({
         data: {
-          x,
-          y,
+          xPercent,
+          yPercent,
           page,
           imageData,
 
@@ -32,37 +35,40 @@ const createSignature = async (req, res) => {
         },
       });
 
-    res.status(201).json(signature);
-  } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      message: "Failed to create signature",
-      error: error.message,
-    });
-  }
-};
-
-const getSignatures = async (req, res) => {
-  try {
-    const signatures =
-      await prisma.signature.findMany({
-        where: {
-          documentId:
-            req.params.documentId,
-        },
-      });
-
-    res.json(signatures);
+    res
+      .status(201)
+      .json(signature);
   } catch (error) {
     console.log(error);
 
     res.status(500).json({
       message:
-        "Failed to fetch signatures",
+        "Failed to create signature",
     });
   }
 };
+
+const getSignatures =
+  async (req, res) => {
+    try {
+      const signatures =
+        await prisma.signature.findMany({
+          where: {
+            documentId:
+              req.params.documentId,
+          },
+        });
+
+      res.json(signatures);
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        message:
+          "Failed to fetch signatures",
+      });
+    }
+  };
 
 module.exports = {
   createSignature,

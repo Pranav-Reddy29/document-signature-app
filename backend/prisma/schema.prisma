@@ -40,11 +40,12 @@ model Signature {
   documentId  String
   signerId    String
 
-  x           Float
-  y           Float
+  xPercent    Float?
+  yPercent    Float?
+
   page        Int
 
-  imageData   String?   // NEW FIELD
+  imageData   String?
 
   status      String   @default("PENDING")
 
