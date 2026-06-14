@@ -32,6 +32,8 @@ model Document {
   owner User @relation(fields: [ownerId], references: [id])
 
   signatures Signature[]
+
+  signers Signer[]
 }
 
 model Signature {
@@ -53,4 +55,22 @@ model Signature {
 
   document Document @relation(fields: [documentId], references: [id])
   signer   User @relation(fields: [signerId], references: [id])
+}
+
+model Signer {
+  id          String   @id @default(uuid())
+
+  email       String
+
+  documentId  String
+
+  token       String   @unique
+
+  status      String   @default("PENDING")
+
+  signedAt    DateTime?
+
+  createdAt   DateTime @default(now())
+
+  document    Document @relation(fields: [documentId], references: [id])
 }

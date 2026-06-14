@@ -18,6 +18,9 @@ const signatureRoutes =
     "./routes/signatureRoutes"
   );
 
+  const signerRoutes =
+  require("./routes/signerRoutes");
+
 const app = express();
 
 app.use(cors());
@@ -46,6 +49,11 @@ app.use(
 app.use(
   "/api/signatures",
   signatureRoutes
+);
+
+app.use(
+  "/api/signers",
+  signerRoutes
 );
 
 app.get("/", (req, res) => {

@@ -8,6 +8,8 @@ import {
 } from "react-pdf";
 
 import SignaturePad from "../components/SignaturePad";
+import SignerManager from "../components/SignerManager";
+import SignerList from "../components/SignerList";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -46,9 +48,10 @@ export default function PDFViewer() {
 
   async function fetchSignatures() {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/signatures/${documentId}`
-      );
+      const res =
+        await axios.get(
+          `http://localhost:5000/api/signatures/${documentId}`
+        );
 
       setSignatures(res.data);
     } catch (error) {
@@ -62,25 +65,10 @@ export default function PDFViewer() {
     setNumPages(numPages);
   }
 
-  const handleSignatureSave = (
-    image
-  ) => {
-    localStorage.setItem(
-      "signatureImage",
-      image
-    );
-
-    setSignatureImage(image);
-
-    console.log(
-      "Signature Image Saved"
-    );
-  };
-
   async function handleClick(e) {
     if (!signatureImage) {
       alert(
-        "Please draw and save a signature first."
+        "Please save a signature first"
       );
       return;
     }
@@ -120,18 +108,44 @@ export default function PDFViewer() {
     }
   }
 
+  const saveSignature =
+    (imageData) => {
+      localStorage.setItem(
+        "signatureImage",
+        imageData
+      );
+
+      setSignatureImage(
+        imageData
+      );
+
+      console.log(
+        "Signature Image Saved"
+      );
+    };
+
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">
         PDF Viewer
       </h1>
 
-      <SignaturePad
-        onSave={
-          handleSignatureSave
-        }
+      {/* Add Signers */}
+      <SignerManager
+        documentId={documentId}
       />
 
+      {/* List Signers */}
+      <SignerList
+        documentId={documentId}
+      />
+
+      {/* Signature Pad */}
+      <SignaturePad
+        onSave={saveSignature}
+      />
+
+      {/* PDF */}
       <div
         className="relative inline-block border"
         onClick={handleClick}
