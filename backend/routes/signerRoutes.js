@@ -1,19 +1,23 @@
 const express = require("express");
 
-const router = express.Router();
+const router =
+  express.Router();
 
 const {
   createSigner,
-  getDocumentSigners,
+  getSigners,
 } = require(
   "../controllers/signerController"
 );
 
-router.post("/", createSigner);
+router.post(
+  "/",
+  createSigner
+);
 
 router.get(
   "/:documentId",
-  getDocumentSigners
+  getSigners
 );
 
 module.exports = router;

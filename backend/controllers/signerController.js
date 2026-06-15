@@ -1,33 +1,57 @@
-const prisma = require("../config/prisma");
-const crypto = require("crypto");
+const prisma =
+  require("../config/prisma");
 
-const createSigner = async (req, res) => {
-  try {
-    const { email, documentId } = req.body;
+const crypto =
+  require("crypto");
 
-    const token =
-      crypto.randomBytes(32).toString("hex");
+const {
+  sendSignerInvite,
+} = require(
+  "../services/emailService"
+);
 
-    const signer =
-      await prisma.signer.create({
-        data: {
-          email,
-          documentId,
-          token,
-        },
+const createSigner =
+  async (req, res) => {
+    try {
+      const {
+        email,
+        documentId,
+      } = req.body;
+
+      const token =
+        crypto
+          .randomBytes(32)
+          .toString("hex");
+
+      const signer =
+        await prisma.signer.create({
+          data: {
+            email,
+            documentId,
+            token,
+          },
+        });
+
+      await sendSignerInvite(
+        email,
+        documentId,
+        signer.id
+      );
+
+      res.status(201).json(
+        signer
+      );
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        message:
+          "Failed to create signer",
       });
+    }
+  };
 
-    res.status(201).json(signer);
-  } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      message: "Failed to create signer",
-    });
-  }
-};
-
-const getDocumentSigners =
+const getSigners =
   async (req, res) => {
     try {
       const signers =
@@ -43,12 +67,13 @@ const getDocumentSigners =
       console.log(error);
 
       res.status(500).json({
-        message: "Failed to fetch signers",
+        message:
+          "Failed to fetch signers",
       });
     }
   };
 
 module.exports = {
   createSigner,
-  getDocumentSigners,
+  getSigners,
 };
