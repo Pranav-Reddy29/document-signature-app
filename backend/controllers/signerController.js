@@ -73,7 +73,65 @@ const getSigners =
     }
   };
 
+const getSignerById =
+  async (req, res) => {
+    try {
+      const signer =
+        await prisma.signer.findUnique({
+          where: {
+            id:
+              req.params.signerId,
+          },
+        });
+
+      if (!signer) {
+        return res.status(404).json({
+          message:
+            "Signer not found",
+        });
+      }
+
+      res.json(signer);
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        message:
+          "Failed to fetch signer",
+      });
+    }
+  };
+
+const completeSigning =
+  async (req, res) => {
+    try {
+      const signer =
+        await prisma.signer.update({
+          where: {
+            id:
+              req.params.signerId,
+          },
+          data: {
+            status: "SIGNED",
+            signedAt:
+              new Date(),
+          },
+        });
+
+      res.json(signer);
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        message:
+          "Failed to complete signing",
+      });
+    }
+  };
+
 module.exports = {
   createSigner,
   getSigners,
+  getSignerById,
+  completeSigning,
 };

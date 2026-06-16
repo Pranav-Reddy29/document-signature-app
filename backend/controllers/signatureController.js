@@ -1,52 +1,49 @@
 const prisma = require("../config/prisma");
 
-const createSignature = async (
-  req,
-  res
-) => {
-  try {
-    const {
-      documentId,
-      xPercent,
-      yPercent,
-      page,
-      imageData,
-    } = req.body;
+const createSignature =
+  async (req, res) => {
+    try {
+      const {
+        documentId,
+        page,
+        imageData,
+      } = req.body;
 
-    const signature =
-      await prisma.signature.create({
-        data: {
-          xPercent,
-          yPercent,
-          page,
-          imageData,
+      const signature =
+        await prisma.signature.create({
+          data: {
+            page,
 
-          document: {
-            connect: {
-              id: documentId,
+            imageData,
+
+            document: {
+              connect: {
+                id:
+                  documentId,
+              },
+            },
+
+            signer: {
+              connect: {
+                id:
+                  "dc8c5fd7-25f1-49cd-82b7-4b28e5b1b53b",
+              },
             },
           },
+        });
 
-          signer: {
-            connect: {
-              id: "dc8c5fd7-25f1-49cd-82b7-4b28e5b1b53b",
-            },
-          },
-        },
+      res.status(201).json(
+        signature
+      );
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        message:
+          "Failed to create signature",
       });
-
-    res
-      .status(201)
-      .json(signature);
-  } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      message:
-        "Failed to create signature",
-    });
-  }
-};
+    }
+  };
 
 const getSignatures =
   async (req, res) => {
