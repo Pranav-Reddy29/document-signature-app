@@ -1,8 +1,4 @@
-const prisma =
-  require("../config/prisma");
-
-const crypto =
-  require("crypto");
+const prisma = require("../config/prisma");
 
 const {
   sendSignerInvite,
@@ -18,25 +14,26 @@ const createSigner =
         documentId,
       } = req.body;
 
-      const token =
-        crypto
-          .randomBytes(32)
-          .toString("hex");
-
       const signer =
         await prisma.signer.create({
           data: {
             email,
             documentId,
-            token,
           },
         });
 
-      await sendSignerInvite(
-        email,
-        documentId,
-        signer.id
-      );
+      try {
+        await sendSignerInvite(
+          email,
+          documentId,
+          signer.id
+        );
+      } catch (emailError) {
+        console.log(
+          "Email Error:",
+          emailError
+        );
+      }
 
       res.status(201).json(
         signer
@@ -60,6 +57,10 @@ const getSigners =
             documentId:
               req.params.documentId,
           },
+
+          orderBy: {
+            createdAt: "desc",
+          },
         });
 
       res.json(signers);
@@ -73,35 +74,6 @@ const getSigners =
     }
   };
 
-const getSignerById =
-  async (req, res) => {
-    try {
-      const signer =
-        await prisma.signer.findUnique({
-          where: {
-            id:
-              req.params.signerId,
-          },
-        });
-
-      if (!signer) {
-        return res.status(404).json({
-          message:
-            "Signer not found",
-        });
-      }
-
-      res.json(signer);
-    } catch (error) {
-      console.log(error);
-
-      res.status(500).json({
-        message:
-          "Failed to fetch signer",
-      });
-    }
-  };
-
 const completeSigning =
   async (req, res) => {
     try {
@@ -111,10 +83,10 @@ const completeSigning =
             id:
               req.params.signerId,
           },
+
           data: {
-            status: "SIGNED",
-            signedAt:
-              new Date(),
+            status:
+              "SIGNED",
           },
         });
 
@@ -124,7 +96,7 @@ const completeSigning =
 
       res.status(500).json({
         message:
-          "Failed to complete signing",
+          "Failed to update signer",
       });
     }
   };
@@ -132,6 +104,5 @@ const completeSigning =
 module.exports = {
   createSigner,
   getSigners,
-  getSignerById,
   completeSigning,
 };

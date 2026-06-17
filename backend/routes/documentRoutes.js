@@ -15,6 +15,7 @@ const {
   uploadDocument,
   getDocuments,
   getDocumentById,
+  deleteDocument,
 } = require(
   "../controllers/documentController"
 );
@@ -36,6 +37,12 @@ router.get(
   "/:id",
   protect,
   getDocumentById
+);
+
+router.delete(
+  "/:id",
+  protect,
+  deleteDocument
 );
 
 module.exports = router;

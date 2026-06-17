@@ -77,12 +77,10 @@ const getDocumentById =
         });
 
       if (!document) {
-        return res
-          .status(404)
-          .json({
-            message:
-              "Document not found",
-          });
+        return res.status(404).json({
+          message:
+            "Document not found",
+        });
       }
 
       res.json(document);
@@ -96,8 +94,32 @@ const getDocumentById =
     }
   };
 
+const deleteDocument =
+  async (req, res) => {
+    try {
+      await prisma.document.delete({
+        where: {
+          id: req.params.id,
+        },
+      });
+
+      res.json({
+        message:
+          "Document deleted",
+      });
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        message:
+          "Delete failed",
+      });
+    }
+  };
+
 module.exports = {
   uploadDocument,
   getDocuments,
   getDocumentById,
+  deleteDocument,
 };

@@ -1,13 +1,14 @@
-const express =
-  require("express");
+const express = require("express");
 
-const router =
-  express.Router();
+const router = express.Router();
+
+const protect = require(
+  "../middleware/authMiddleware"
+);
 
 const {
   createSigner,
   getSigners,
-  getSignerById,
   completeSigning,
 } = require(
   "../controllers/signerController"
@@ -15,17 +16,14 @@ const {
 
 router.post(
   "/",
+  protect,
   createSigner
 );
 
 router.get(
   "/:documentId",
+  protect,
   getSigners
-);
-
-router.get(
-  "/single/:signerId",
-  getSignerById
 );
 
 router.put(
