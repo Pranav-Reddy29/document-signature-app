@@ -8,69 +8,121 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid())
+  id        String   @id @default(uuid())
   name      String
-  email     String     @unique
+  email     String   @unique
   password  String
-  createdAt DateTime   @default(now())
+  createdAt DateTime @default(now())
 
   documents Document[]
-
-  signatures Signature[]
 }
 
 model Document {
-  id          String   @id @default(uuid())
-  title       String
-  fileUrl     String
+  id String @id @default(uuid())
 
-  status      String   @default("PENDING")
+  title         String
+  fileUrl       String
+  signedFileUrl String?
+  status        String  @default("PENDING")
 
-  ownerId     String
-  createdAt   DateTime @default(now())
+  ownerId   String
+  createdAt DateTime @default(now())
 
   owner User @relation(fields: [ownerId], references: [id])
 
   signatures Signature[]
+  signers    Signer[]
 
-  signers Signer[]
+  signatureFields SignatureField[]
 }
 
 model Signature {
-  id          String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  documentId  String
-  signerId    String
+  documentId String
+  signerId String
 
-  xPercent    Float?
-  yPercent    Float?
+  fieldId String? @unique
 
-  page        Int
+  page Int
 
-  imageData   String?
+  x Float?
+  y Float?
 
-  status      String   @default("PENDING")
+  pageWidth Float?
+  pageHeight Float?
 
-  createdAt   DateTime @default(now())
+  width Float?
+  height Float?
+
+  imageData String?
+
+  fieldType String @default("SIGNATURE")
+
+  createdAt DateTime @default(now())
 
   document Document @relation(fields: [documentId], references: [id])
-  signer   User @relation(fields: [signerId], references: [id])
+
+  signer Signer @relation(fields: [signerId], references: [id])
+
+  field SignatureField? @relation(fields: [fieldId], references: [id])
 }
 
 model Signer {
-  id          String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  email       String
+  email String
 
-  documentId  String
+  documentId String
 
-  token       String   @unique
+  token String @unique
 
-  status      String   @default("PENDING")
+  status String @default("PENDING")
 
-  signedAt    DateTime?
+  signedAt DateTime?
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  document    Document @relation(fields: [documentId], references: [id])
+  document Document @relation(fields: [documentId], references: [id])
+
+  signatures Signature[]
+
+  signatureFields SignatureField[]
+}
+
+model AuditLog {
+  id String @id @default(uuid())
+
+  documentId String
+
+  action String
+
+  userEmail String?
+
+  createdAt DateTime @default(now())
+}
+
+model SignatureField {
+  id String @id @default(uuid())
+
+  documentId String
+  signerId   String
+
+  page Int
+
+  x Float
+  y Float
+
+  width  Float
+  height Float
+
+  isSigned Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  document Document @relation(fields: [documentId], references: [id])
+
+  signer Signer @relation(fields: [signerId], references: [id])
+
+  signatures Signature[]
 }

@@ -12,6 +12,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ManageSigners from "./pages/ManageSigners";
+import DocumentSignatures from "./pages/DocumentSignatures";
+import PrepareDocument from "./pages/PrepareDocument";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -46,9 +48,7 @@ function App() {
 
         <Route
           path="/sign/:documentId/:signerId"
-          element={
-            <SignDocument />
-          }
+          element={<SignDocument />}
         />
 
         <Route
@@ -60,12 +60,29 @@ function App() {
           }
         />
 
+        {/* NEW OWNER SIGNATURE MANAGEMENT */}
+        <Route
+          path="/document-signatures/:documentId"
+          element={
+            <ProtectedRoute>
+              <DocumentSignatures />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+  path="/prepare/:documentId"
+  element={
+    <ProtectedRoute>
+      <PrepareDocument />
+    </ProtectedRoute>
+  }
+/>
+
         <Route
           path="/"
           element={
-            <Navigate
-              to="/login"
-            />
+            <Navigate to="/login" />
           }
         />
 

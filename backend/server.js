@@ -21,6 +21,11 @@ const signatureRoutes =
   const signerRoutes =
   require("./routes/signerRoutes");
 
+const signatureFieldRoutes =
+  require(
+    "./routes/signatureFieldRoutes"
+  );
+
 const app = express();
 
 app.use(cors());
@@ -54,6 +59,26 @@ app.use(
 app.use(
   "/api/signers",
   signerRoutes
+);
+
+app.use(
+  "/signed",
+  express.static(
+    path.join(
+      __dirname,
+      "signed"
+    )
+  )
+);
+
+app.use(
+  "/api/signature-fields",
+  signatureFieldRoutes
+);
+
+app.use(
+  "/api/signature-fields",
+  require("./routes/signatureFieldRoutes")
 );
 
 app.get("/", (req, res) => {

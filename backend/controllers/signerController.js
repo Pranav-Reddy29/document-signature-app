@@ -1,82 +1,156 @@
 const prisma = require("../config/prisma");
+const crypto = require("crypto");
 
 const {
   sendSignerInvite,
-} = require(
-  "../services/emailService"
-);
+} = require("../services/emailService");
 
-const createSigner =
-  async (req, res) => {
-    try {
-      const {
-        email,
-        documentId,
-      } = req.body;
+const {
+  createAuditLog,
+} = require("../services/auditService");
 
-      const signer =
-        await prisma.signer.create({
-          data: {
-            email,
-            documentId,
-          },
-        });
+const createSigner = async (
+  req,
+  res
+) => {
+  try {
+    const {
+      email,
+      documentId,
+    } = req.body;
 
-      try {
-        await sendSignerInvite(
+    const token =
+      crypto
+        .randomBytes(32)
+        .toString("hex");
+
+    const signer =
+      await prisma.signer.create({
+        data: {
           email,
           documentId,
-          signer.id
-        );
-      } catch (emailError) {
-        console.log(
-          "Email Error:",
-          emailError
-        );
-      }
+          token,
+        },
+      });
 
-      res.status(201).json(
-        signer
+    try {
+      await sendSignerInvite(
+        email,
+        documentId,
+        signer.id
       );
     } catch (error) {
       console.log(error);
-
-      res.status(500).json({
-        message:
-          "Failed to create signer",
-      });
     }
-  };
 
-const getSigners =
+    await createAuditLog(
+      documentId,
+      "SIGNER_ADDED",
+      email
+    );
+
+    res.status(201).json(
+      signer
+    );
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message:
+        "Failed to create signer",
+    });
+  }
+};
+
+const getSigners = async (
+  req,
+  res
+) => {
+  try {
+    const signers =
+      await prisma.signer.findMany({
+        where: {
+          documentId:
+            req.params.documentId,
+        },
+
+        orderBy: {
+          createdAt:
+            "desc",
+        },
+      });
+
+    res.json(signers);
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message:
+        "Failed to fetch signers",
+    });
+  }
+};
+
+const getSignerById =
   async (req, res) => {
     try {
-      const signers =
-        await prisma.signer.findMany({
+      const signer =
+        await prisma.signer.findUnique({
           where: {
-            documentId:
-              req.params.documentId,
-          },
-
-          orderBy: {
-            createdAt: "desc",
+            id:
+              req.params.signerId,
           },
         });
 
-      res.json(signers);
+      if (!signer) {
+        return res.status(404).json({
+          message:
+            "Signer not found",
+        });
+      }
+
+      res.json(signer);
     } catch (error) {
       console.log(error);
 
       res.status(500).json({
         message:
-          "Failed to fetch signers",
+          "Failed to fetch signer",
       });
     }
   };
 
 const completeSigning =
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
+      const existingSigner =
+        await prisma.signer.findUnique({
+          where: {
+            id:
+              req.params.signerId,
+          },
+        });
+
+      if (!existingSigner) {
+        return res.status(404).json({
+          message:
+            "Signer not found",
+        });
+      }
+
+      if (
+        existingSigner.status ===
+        "SIGNED"
+      ) {
+        return res.status(400).json({
+          message:
+            "Document already signed",
+        });
+      }
+
       const signer =
         await prisma.signer.update({
           where: {
@@ -87,8 +161,17 @@ const completeSigning =
           data: {
             status:
               "SIGNED",
+
+            signedAt:
+              new Date(),
           },
         });
+
+      await createAuditLog(
+        signer.documentId,
+        "DOCUMENT_SIGNED",
+        signer.email
+      );
 
       res.json(signer);
     } catch (error) {
@@ -104,5 +187,6 @@ const completeSigning =
 module.exports = {
   createSigner,
   getSigners,
+  getSignerById,
   completeSigning,
 };

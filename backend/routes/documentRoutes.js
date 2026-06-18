@@ -15,7 +15,11 @@ const {
   uploadDocument,
   getDocuments,
   getDocumentById,
+  getPublicDocument,
   deleteDocument,
+  downloadSignedDocument,
+  viewSignedDocument,
+  getAuditLogs,
 } = require(
   "../controllers/documentController"
 );
@@ -31,6 +35,46 @@ router.get(
   "/",
   protect,
   getDocuments
+);
+
+/*
+  IMPORTANT:
+  Public routes must be
+  before /:id route
+*/
+
+router.get(
+  "/public/:id",
+  getPublicDocument
+);
+
+router.get(
+  "/audit/:documentId",
+  protect,
+  getAuditLogs
+);
+
+router.get(
+  "/signed/view/:id",
+  protect,
+  viewSignedDocument
+);
+
+router.get(
+  "/signed/download/:id",
+  protect,
+  downloadSignedDocument
+);
+
+/*
+  Optional fallback route
+  if old frontend URLs exist
+*/
+
+router.get(
+  "/download/:id",
+  protect,
+  downloadSignedDocument
 );
 
 router.get(

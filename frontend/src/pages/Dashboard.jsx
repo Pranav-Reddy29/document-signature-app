@@ -8,81 +8,54 @@ import DocumentsList from "../components/DocumentsList";
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  const [documents, setDocuments] =
-    useState([]);
+  const [documents, setDocuments] = useState([]);
 
-  const fetchDocuments =
-    useCallback(async () => {
-      try {
-        const token =
-          localStorage.getItem(
-            "token"
-          );
+  const fetchDocuments = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-        const res =
-          await axios.get(
-            "http://localhost:5000/api/documents",
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${token}`,
-              },
-            }
-          );
+      const res = await axios.get(
+        "http://localhost:5000/api/documents",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-        setDocuments(
-          res.data
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    }, []);
+      setDocuments(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   useEffect(() => {
-    const loadDocuments = async () => {
-      await fetchDocuments();
-    };
-    loadDocuments();
+    fetchDocuments();
   }, [fetchDocuments]);
 
   const logout = () => {
-    localStorage.removeItem(
-      "token"
-    );
-
+    localStorage.removeItem("token");
     navigate("/login");
   };
 
-  const totalDocuments =
-    documents.length;
+  const totalDocuments = documents.length;
 
-  const pendingDocuments =
-    documents.filter(
-      (doc) =>
-        doc.status ===
-        "PENDING"
-    ).length;
+  const pendingDocuments = documents.filter(
+    (doc) => doc.status === "PENDING"
+  ).length;
 
-  const completedDocuments =
-    documents.filter(
-      (doc) =>
-        doc.status ===
-        "SIGNED"
-    ).length;
+  const completedDocuments = documents.filter(
+    (doc) => doc.status === "SIGNED"
+  ).length;
 
-  const totalSigners =
-    documents.reduce(
-      (count, doc) =>
-        count +
-        (doc.signers?.length || 0),
-      0
-    );
+  const totalSigners = documents.reduce(
+    (count, doc) => count + (doc.signers?.length || 0),
+    0
+  );
 
   return (
     <div className="min-h-screen bg-slate-100">
-
       <div className="bg-white shadow p-4 flex justify-between items-center">
-
         <div>
           <h1 className="text-2xl font-bold">
             DocuSign Clone
@@ -99,17 +72,14 @@ export default function Dashboard() {
         >
           Logout
         </button>
-
       </div>
 
       <div className="max-w-7xl mx-auto p-8">
-
         <h2 className="text-3xl font-bold mb-6">
           Welcome Back 👋
         </h2>
 
         <div className="grid md:grid-cols-4 gap-6 mb-8">
-
           <div className="bg-white p-6 rounded-xl shadow">
             <h3 className="text-gray-500">
               Documents
@@ -149,24 +119,17 @@ export default function Dashboard() {
               {totalSigners}
             </p>
           </div>
-
         </div>
 
         <UploadDocument
-          onUploadSuccess={
-            fetchDocuments
-          }
+          onUploadSuccess={fetchDocuments}
         />
 
         <DocumentsList
           documents={documents}
-          refreshDocuments={
-            fetchDocuments
-          }
+          refreshDocuments={fetchDocuments}
         />
-
       </div>
-
     </div>
   );
 }
