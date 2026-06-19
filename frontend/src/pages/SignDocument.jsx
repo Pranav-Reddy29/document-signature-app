@@ -61,11 +61,11 @@ export default function SignDocument() {
       try {
         const res =
           await axios.get(
-            `http://localhost:5000/api/documents/public/${documentId}`
+            `${import.meta.env.VITE_API_URL}/api/documents/public/${documentId}`
           );
 
         setPdfUrl(
-          `http://localhost:5000/uploads/${res.data.fileUrl}`
+          `${import.meta.env.VITE_API_URL}/uploads/${res.data.fileUrl}`
         );
       } catch (error) {
         console.log(error);
@@ -77,7 +77,7 @@ export default function SignDocument() {
       try {
         const res =
           await axios.get(
-            `http://localhost:5000/api/signature-fields/document/${documentId}/signer/${signerId}`
+            `${import.meta.env.VITE_API_URL}/api/signature-fields/document/${documentId}/signer/${signerId}`
           );
 
         const signerFields =
@@ -100,7 +100,7 @@ export default function SignDocument() {
       try {
         const res =
           await axios.get(
-            `http://localhost:5000/api/signers/public/${signerId}`
+            `${import.meta.env.VITE_API_URL}/api/signers/public/${signerId}`
           );
 
         if (
@@ -249,7 +249,7 @@ export default function SignDocument() {
         }
 
         await axios.post(
-  "http://localhost:5000/api/signatures",
+  "${import.meta.env.VITE_API_URL}/api/signatures",
   {
     fieldId: field.id,
 
@@ -304,7 +304,7 @@ export default function SignDocument() {
   const completeSigning = async () => {
   try {
     const res = await axios.get(
-      `http://localhost:5000/api/signature-fields/document/${documentId}/signer/${signerId}`
+      `${import.meta.env.VITE_API_URL}/api/signature-fields/document/${documentId}/signer/${signerId}`
     );
 
     const unsignedFields = res.data.filter(
@@ -319,7 +319,7 @@ export default function SignDocument() {
     }
 
     await axios.put(
-      `http://localhost:5000/api/signers/complete/${signerId}`
+      `${import.meta.env.VITE_API_URL}/api/signers/complete/${signerId}`
     );
 
     alert(

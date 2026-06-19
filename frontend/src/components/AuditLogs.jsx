@@ -20,7 +20,7 @@ export default function AuditLogs({
 
         const { data } =
           await axios.get(
-            `http://localhost:5000/api/documents/audit/${documentId}`,
+            `${import.meta.env.VITE_API_URL}/api/documents/audit/${documentId}`,
             {
               headers: {
                 Authorization:

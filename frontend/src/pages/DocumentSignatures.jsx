@@ -13,7 +13,7 @@ export default function DocumentSignatures() {
       try {
         const res =
           await axios.get(
-            `http://localhost:5000/api/signatures/${documentId}`
+            `${import.meta.env.VITE_API_URL}/api/signatures/${documentId}`
           );
 
         setSignatures(
@@ -45,7 +45,7 @@ export default function DocumentSignatures() {
           );
 
         await axios.delete(
-          `http://localhost:5000/api/signatures/${signatureId}`,
+          `${import.meta.env.VITE_API_URL}/api/signatures/${signatureId}`,
           {
             headers: {
               Authorization:

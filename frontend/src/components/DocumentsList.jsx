@@ -25,7 +25,7 @@ export default function DocumentsList({
           );
 
         await axios.delete(
-          `http://localhost:5000/api/documents/${id}`,
+          `${import.meta.env.VITE_API_URL}/api/documents/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ export default function DocumentsList({
 
         const response =
           await axios.get(
-            `http://localhost:5000/api/documents/signed/download/${documentId}`,
+            `${import.meta.env.VITE_API_URL}/api/documents/signed/download/${documentId}`,
             {
               headers: {
                 Authorization:
@@ -163,7 +163,7 @@ export default function DocumentsList({
               <div className="flex flex-wrap gap-3 mt-5">
 
                 <a
-                  href={`http://localhost:5000/uploads/${doc.fileUrl}`}
+                  href={`${import.meta.env.VITE_API_URL}/uploads/${doc.fileUrl}`}
                   target="_blank"
                   rel="noreferrer"
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
@@ -207,7 +207,7 @@ export default function DocumentsList({
                 {doc.signedFileUrl && (
                   <>
                     <a
-                      href={`http://localhost:5000/signed/${doc.signedFileUrl}`}
+                      href={`${import.meta.env.VITE_API_URL}/signed/${doc.signedFileUrl}`}
                       target="_blank"
                       rel="noreferrer"
                       className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"

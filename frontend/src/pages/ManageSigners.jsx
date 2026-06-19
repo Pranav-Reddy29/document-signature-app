@@ -36,7 +36,7 @@ export default function ManageSigners() {
     useCallback(async () => {
       const { data } =
         await axios.get(
-          `http://localhost:5000/api/signers/${documentId}`,
+          `${import.meta.env.VITE_API_URL}/api/signers/${documentId}`,
           {
             headers: {
               Authorization:
@@ -56,7 +56,7 @@ export default function ManageSigners() {
       try {
         const res =
           await axios.get(
-            `http://localhost:5000/api/signature-fields/document/${documentId}`,
+            `${import.meta.env.VITE_API_URL}/api/signature-fields/document/${documentId}`,
             {
               headers: {
                 Authorization:
@@ -113,7 +113,7 @@ export default function ManageSigners() {
 
       try {
         await axios.post(
-          "http://localhost:5000/api/signers",
+          "${import.meta.env.VITE_API_URL}/api/signers",
           {
             email,
             documentId,

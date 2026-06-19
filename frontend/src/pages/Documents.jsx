@@ -12,7 +12,7 @@ export default function Documents() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/documents",
+        "${import.meta.env.VITE_API_URL}/api/documents",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -59,7 +59,7 @@ export default function Documents() {
               </p>
 
               <a
-                href={`http://localhost:5000/uploads/${doc.fileUrl}`}
+                href={`${import.meta.env.VITE_API_URL}/uploads/${doc.fileUrl}`}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-block mt-3 text-blue-600"

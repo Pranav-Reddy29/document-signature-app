@@ -14,7 +14,7 @@ export default function SignerList({
   useEffect(() => {
     async function fetchSigners() {
       const res = await axios.get(
-        `http://localhost:5000/api/signers/${documentId}`
+        `${import.meta.env.VITE_API_URL}/api/signers/${documentId}`
       );
 
       setSigners(res.data);

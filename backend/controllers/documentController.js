@@ -332,7 +332,7 @@ const viewSignedDocument =
 
       res.json({
         url:
-          `http://localhost:5000/signed/${document.signedFileUrl}`,
+          `${import.meta.env.VITE_API_URL}/signed/${document.signedFileUrl}`,
       });
     } catch (error) {
       console.log(error);

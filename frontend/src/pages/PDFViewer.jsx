@@ -50,7 +50,7 @@ export default function PDFViewer() {
     try {
       const res =
         await axios.get(
-          `http://localhost:5000/api/signatures/${documentId}`
+          `${import.meta.env.VITE_API_URL}/api/signatures/${documentId}`
         );
 
       setSignatures(res.data);
@@ -88,7 +88,7 @@ export default function PDFViewer() {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/signatures",
+        "${import.meta.env.VITE_API_URL}/api/signatures",
         {
           documentId,
           xPercent,
@@ -151,7 +151,7 @@ export default function PDFViewer() {
         onClick={handleClick}
       >
         <Document
-          file="http://localhost:5000/uploads/1780840363361.pdf"
+          file="${import.meta.env.VITE_API_URL}/uploads/1780840363361.pdf"
           onLoadSuccess={
             onLoadSuccess
           }

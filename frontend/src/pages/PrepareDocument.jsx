@@ -49,11 +49,11 @@ export default function PrepareDocument() {
       try {
         const res =
           await axios.get(
-            `http://localhost:5000/api/documents/public/${documentId}`
+            `${import.meta.env.VITE_API_URL}/api/documents/public/${documentId}`
           );
 
         setPdfUrl(
-          `http://localhost:5000/uploads/${res.data.fileUrl}`
+          `${import.meta.env.VITE_API_URL}/uploads/${res.data.fileUrl}`
         );
       } catch (error) {
         console.log(error);
@@ -65,7 +65,7 @@ export default function PrepareDocument() {
       try {
         const res =
           await axios.get(
-            `http://localhost:5000/api/signers/${documentId}`,
+            `${import.meta.env.VITE_API_URL}/api/signers/${documentId}`,
             {
               headers: {
                 Authorization:
@@ -87,7 +87,7 @@ export default function PrepareDocument() {
       try {
         const res =
           await axios.get(
-            `http://localhost:5000/api/signature-fields/document/${documentId}`
+            `${import.meta.env.VITE_API_URL}/api/signature-fields/document/${documentId}`
           );
 
         setFields(
@@ -133,7 +133,7 @@ export default function PrepareDocument() {
 
       try {
         await axios.post(
-          "http://localhost:5000/api/signature-fields",
+          "${import.meta.env.VITE_API_URL}/api/signature-fields",
           {
             documentId,
 
@@ -185,7 +185,7 @@ export default function PrepareDocument() {
 
       try {
         await axios.delete(
-          `http://localhost:5000/api/signature-fields/${fieldId}`,
+          `${import.meta.env.VITE_API_URL}/api/signature-fields/${fieldId}`,
           {
             headers: {
               Authorization:
