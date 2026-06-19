@@ -10,7 +10,7 @@ export default function SignerManager({
   async function addSigner() {
     try {
       await axios.post(
-        "${import.meta.env.VITE_API_URL}/api/signers",
+        `${import.meta.env.VITE_API_URL}/api/signers`,
         {
           email,
           documentId,

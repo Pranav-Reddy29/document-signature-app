@@ -36,7 +36,7 @@ export default function UploadDocument({
           );
 
         await axios.post(
-          "${import.meta.env.VITE_API_URL}/api/documents/upload",
+          `${import.meta.env.VITE_API_URL}/api/documents/upload`,
           formData,
           {
             headers: {

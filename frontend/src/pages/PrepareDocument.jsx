@@ -133,7 +133,7 @@ export default function PrepareDocument() {
 
       try {
         await axios.post(
-          "${import.meta.env.VITE_API_URL}/api/signature-fields",
+          `${import.meta.env.VITE_API_URL}/api/signature-fields`,
           {
             documentId,
 
