@@ -309,40 +309,38 @@ const downloadSignedDocument =
     }
   };
 
-const viewSignedDocument =
-  async (req, res) => {
-    try {
-      const document =
-        await prisma.document.findUnique({
-          where: {
-            id:
-              req.params.id,
-          },
-        });
-
-      if (
-        !document ||
-        !document.signedFileUrl
-      ) {
-        return res.status(404).json({
-          message:
-            "Signed PDF not found",
-          });
-      }
-
-      res.json({
-        url:
-          `${import.meta.env.VITE_API_URL}/signed/${document.signedFileUrl}`,
+const viewSignedDocument = async (req, res) => {
+  try {
+    const document =
+      await prisma.document.findUnique({
+        where: {
+          id: req.params.id,
+        },
       });
-    } catch (error) {
-      console.log(error);
 
-      res.status(500).json({
-        message:
-          "Failed to fetch signed PDF",
+    if (
+      !document ||
+      !document.signedFileUrl
+    ) {
+      return res.status(404).json({
+        message: "Signed PDF not found",
       });
     }
-  };
+
+    res.json({
+      url: `${req.protocol}://${req.get(
+        "host"
+      )}/signed/${document.signedFileUrl}`,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message:
+        "Failed to fetch signed PDF",
+    });
+  }
+};
 
 const getAuditLogs =
   async (req, res) => {
